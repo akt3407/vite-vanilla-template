@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>サイトタイトル | サブタイトル</title>
+    <meta
+      name="description"
+      content="サイトの説明文を120文字以内で簡潔に書きます。検索結果に表示される重要な要素です。"
+    />
+    <meta name="author" content="作者名" />
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="robots" content="index, follow" />
+
+    <link rel="canonical" href="https://example.com/" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="サイト名" />
+    <meta property="og:title" content="ページタイトル" />
+    <meta
+      property="og:description"
+      content="OGP用の説明文。SNSでシェアされた時に表示される文章。"
+    />
+    <meta property="og:url" content="https://example.com/" />
+    <meta property="og:image" content="https://example.com/ogp.png" />
+    <meta property="og:locale" content="ja_JP" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ページタイトル" />
+    <meta name="twitter:description" content="Twitterカード用の説明文。" />
+    <meta name="twitter:image" content="https://example.com/ogp.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- css -->
+    <link rel="stylesheet" href="/src/style.css" />
+
+    <!-- js -->
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body class="bg-white text-slate-900 antialiased">
+    <load src="src/sections/header.html" />
+    <main>
+      <load src="src/sections/hero.html" />
+      <load src="src/sections/features.html" />
+    </main>
+    <load src="src/sections/footer.html" />
+  </body>
+</html>

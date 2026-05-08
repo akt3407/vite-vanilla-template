@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+/* デザイントークン */
+@theme {
+  /* スペーシング（1単位 = 1px） */
+  --spacing: 0.1rem;
+
+  /* フォント */
+  --font-sans: 'Noto Sans JP', sans-serif;
+  --font-mono: 'Lato', monospace;
+
+  /* font-size（基準幅: 1440px） */
+  --text-170: clamp(8.8rem, 11.81vw, 17rem); /* 88〜170px */
+  --text-64: clamp(4rem, 4.44vw, 6.4rem); /* 40〜64px */
+  --text-34: clamp(2.8rem, 2.36vw, 3.4rem); /* 28〜34px */
+  --text-32: clamp(2.4rem, 2.22vw, 3.2rem); /* 24〜32px */
+  --text-24a: clamp(2rem, 1.67vw, 2.4rem); /* 20〜24px */
+  --text-24b: clamp(1.8rem, 1.67vw, 2.4rem); /* 18〜24px */
+  --text-16a: clamp(1.4rem, 1.11vw, 1.6rem); /* 14〜16px */
+  --text-16b: clamp(1.2rem, 1.11vw, 1.6rem); /* 12〜16px */
+  --text-14: clamp(1.3rem, 0.97vw, 1.4rem); /* 13〜14px */
+  --text-12: clamp(1rem, 0.83vw, 1.2rem); /* 10〜12px */
+
+  /* 色 */
+  --color-*: initial;
+
+  --color-white: #ffffff;
+  --color-black: #222222;
+  --color-bg-white: #f2f2f2;
+
+  --color-border: #d7d7d7;
+  --color-border-dark: #4b4b4b;
+}
+
+/* ベーススタイル */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    font-size: calc(10 / 375 * 100vw);
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: calc(10 / 1440 * 100vw);
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: 1;
+    color: var(--color-black);
+    font-feature-settings: 'palt';
+    font-weight: 400;
+    background: var(--color-bg-white);
+  }
+
+  img,
+  video {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  /* 日本語の禁則処理 */
+  p,
+  li,
+  h1,
+  h2,
+  h3,
+  h4 {
+    overflow-wrap: break-word;
+    word-break: auto-phrase;
+  }
+}

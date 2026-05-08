@@ -1,0 +1,47 @@
+{
+  "files.associations": {
+    "src/sections/**/*.html": "handlebars"
+  },
+
+  "html.validate.scripts": true,
+  "html.validate.styles": true,
+
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[handlebars]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  "eslint.useFlatConfig": true,
+  "eslint.format.enable": false,
+  "eslint.validate": ["javascript"],
+
+  "emmet.includeLanguages": {
+    "handlebars": "html"
+  },
+
+  "tailwindCSS.includeLanguages": {
+    "handlebars": "html"
+  }
+}
