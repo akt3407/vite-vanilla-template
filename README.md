@@ -39,6 +39,8 @@ vite-vanilla-template/
 │   │   ├── hero.html
 │   │   ├── features.html
 │   │   └── footer.html
+│   ├── seo/
+│   │   └── jsonld.js          # 構造化データ (ビルド時にindex.htmlへinline展開)
 │   ├── main.js                # JSエントリ
 │   └── style.css              # Tailwind import
 ├── index.html                 # トップページ（エントリ）
@@ -94,6 +96,57 @@ vite-vanilla-template/
 ```
 
 > **エディタの doctype 警告について**: `src/sections/*.html` は断片のため doctype がなく、エディタが警告を出すことがあります。`.vscode/settings.json` で handlebars 言語に関連付けて抑制済みです。ビルド出力には影響しません。
+
+## SEO構成
+
+`index.html` の `<head>` は SEO・SNSシェア・PWA を意識したテンプレート構成になっています。ブロック単位でコメント区切り済みなので、必要な箇所だけ書き換えればそのまま使えます。
+
+### 含まれている要素
+
+| ブロック | 内容 |
+|---|---|
+| 基本メタ | `title` / `description` / `author` / `application-name` |
+| クロール制御 | `robots` (`max-snippet:-1, max-image-preview:large` 付き) / `googlebot` / `referrer` |
+| 表示テーマ | `color-scheme: light dark` + ライト/ダーク別 `theme-color` |
+| canonical | `canonical` + `hreflang="ja"` + `hreflang="x-default"` |
+| アイコン | `favicon.svg` / `apple-touch-icon` / `site.webmanifest` |
+| Open Graph | `og:*` フルセット (image の type/width/height/alt も指定済み) |
+| Twitter Card | `summary_large_image` + `site` / `creator` / `image:alt` |
+| 構造化データ | JSON-LD (WebSite + Organization) を **ビルド時にinline展開** |
+
+### TODO 箇所の置換
+
+プレースホルダは以下に統一されています。本番化時に一括置換してください:
+
+- `https://example.com/` → 本番URL
+- `サイトタイトル` / `サイト名` / `組織名` → 実際の名称
+- `@your_handle` → Twitter公式アカウント
+- `/apple-touch-icon.png`、Android用アイコン → `/public/` に配置 (例: [RealFaviconGenerator](https://realfavicongenerator.net/))
+
+### JSON-LD の管理方法
+
+構造化データは `src/seo/jsonld.js` でJSオブジェクトとして管理し、`vite.config.js` のミニプラグインが `<!-- jsonld -->` プレースホルダを `<script type="application/ld+json">…</script>` に置換します。
+
+```js
+// src/seo/jsonld.js
+export const jsonld = {
+  '@context': 'https://schema.org',
+  '@graph': [ /* WebSite, Organization, ... */ ],
+};
+```
+
+```html
+<!-- index.html (head内) -->
+<!-- jsonld -->
+```
+
+ビルド時 (`npm run build`) と dev 時 (`npm run dev`) の両方で HTML に inline 展開されるため、JSを実行しないSNSクローラ (Twitter / Facebook / LINE / Slack 等) も認識できます。スキーマの種類 (Article / Product / BreadcrumbList 等) を増やしたい場合は `@graph` 配列に追加してください。
+
+### 検証
+
+- **JSON-LD**: [Schema Markup Validator](https://validator.schema.org/) または Google [Rich Results Test](https://search.google.com/test/rich-results)
+- **OGP**: Facebook Sharing Debugger / Twitter Card Validator (本番デプロイ後)
+- **総合**: Chrome DevTools → Lighthouse → SEO カテゴリで 100 点を確認
 
 ## Tailwind CSS
 
