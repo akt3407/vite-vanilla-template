@@ -1,34 +1,50 @@
 # vite-vanilla-template
 
-Vite + バニラHTML/JS で本格的なWebサイトを作るためのスターターテンプレート。Tailwind CSS v4・HTMLセクション分割・画像WebP自動変換・Lint/Format環境を最初から組み込んでいます。
+[Vite+](https://viteplus.dev/) + バニラHTML/JS で本格的なWebサイトを作るためのスターターテンプレート。Tailwind CSS v4・HTMLセクション分割・画像WebP自動変換・Lint/Format環境を最初から組み込んでいます。
 
 ## 特徴
 
-- **Vite 8** — 高速HMRと最適化ビルド
+- **Vite+** — Vite/Oxlint/Oxfmt を統合した CLI (`vp`)。高速HMRと最適化ビルド
 - **バニラHTML/JS** — フレームワーク非依存。`index.html` に直接書ける
 - **Tailwind CSS v4** — `@tailwindcss/vite` プラグイン方式（設定ファイル不要）
 - **HTMLセクション分割** — `vite-plugin-html-inject` でヘッダー/フッター等を別ファイル化
 - **画像のWebP自動変換** — `vite-imagetools` で `src/assets/` の画像を自動最適化
-- **ESLint v9 + Prettier** — Flat Config / Tailwindクラス自動ソート
+- **Oxlint + Oxfmt** — Rust 製の高速 Lint/Format（`vp check` で一括検証）。Tailwindクラス自動ソート対応
+- **Git pre-commit フック** — ステージ済みファイルを `vp staged` で自動整形
 - **VS Code 設定済み** — フォーマット・Emmet・Tailwind補完を即時利用可
 
 ## クイックスタート
 
+Vite+ CLI（`vp`）を未インストールの場合は最初に1回だけ実行:
+
+```bash
+# macOS / Linux
+curl -fsSL https://vite.plus | bash
+
+# Windows (PowerShell)
+irm https://vite.plus/ps1 | iex
+```
+
+その後、プロジェクトを起動:
+
 ```bash
 git clone <this-repo>
 cd vite-vanilla-template
-npm install
-npm run dev
+vp install
+vp dev
 ```
 
 → http://localhost:5173
+
+> パッケージマネージャは **pnpm**（`packageManager` フィールドで宣言）。`pnpm install` / `pnpm dev` でも動作します。`scripts` は `vp` を呼び出すラッパーになっています。
 
 ## プロジェクト構成
 
 ```
 vite-vanilla-template/
+├── .vite-hooks/               # Vite+ が管理する Git hooks（pre-commit で vp staged 実行）
 ├── .vscode/
-│   └── settings.json          # VS Code 設定（Prettier・Emmet・Tailwind補完）
+│   └── settings.json          # VS Code 設定（フォーマット・Emmet・Tailwind補完）
 ├── public/                    # 加工不要な静的ファイル
 │   ├── favicon.svg
 │   └── ...                    # apple-touch-icon, ogp.png 等
@@ -44,23 +60,24 @@ vite-vanilla-template/
 │   ├── main.js                # JSエントリ
 │   └── style.css              # Tailwind import
 ├── index.html                 # トップページ（エントリ）
-├── vite.config.js             # Vite + 各プラグイン設定
-├── eslint.config.js           # ESLint Flat Config
-├── .prettierrc.json           # Prettier 設定
-├── .prettierignore
+├── vite.config.js             # Vite + Oxlint(`lint`) + Oxfmt(`fmt`) 設定を一括管理
 └── package.json
 ```
 
 ## スクリプト
 
-| コマンド | 説明 |
-|---|---|
-| `npm run dev` | 開発サーバー起動 (http://localhost:5173) |
-| `npm run build` | 本番ビルド (`dist/` に出力) |
-| `npm run preview` | ビルド結果のローカルプレビュー |
-| `npm run lint` | ESLint チェック |
-| `npm run lint:fix` | ESLint 自動修正 |
-| `npm run format` | Prettier で全ファイル整形 |
+`vp` を直接呼ぶか、`pnpm <name>` 経由でも実行できます。
+
+| コマンド          | 同等の pnpm 経由 | 説明                                     |
+| ----------------- | ---------------- | ---------------------------------------- |
+| `vp dev`          | `pnpm dev`       | 開発サーバー起動 (http://localhost:5173) |
+| `vp build`        | `pnpm build`     | 本番ビルド (`dist/` に出力)              |
+| `vp preview`      | `pnpm preview`   | ビルド結果のローカルプレビュー           |
+| `vp lint .`       | `pnpm lint`      | Oxlint チェック                          |
+| `vp lint . --fix` | `pnpm lint:fix`  | Oxlint 自動修正                          |
+| `vp fmt .`        | `pnpm format`    | Oxfmt で全ファイル整形                   |
+| `vp check`        | —                | lint + format + 型チェックを一括実行     |
+| `vp check --fix`  | —                | 上記を可能な範囲で自動修正               |
 
 ## HTMLセクション分割
 
@@ -103,16 +120,16 @@ vite-vanilla-template/
 
 ### 含まれている要素
 
-| ブロック | 内容 |
-|---|---|
-| 基本メタ | `title` / `description` / `author` / `application-name` |
+| ブロック     | 内容                                                                                 |
+| ------------ | ------------------------------------------------------------------------------------ |
+| 基本メタ     | `title` / `description` / `author` / `application-name`                              |
 | クロール制御 | `robots` (`max-snippet:-1, max-image-preview:large` 付き) / `googlebot` / `referrer` |
-| 表示テーマ | `color-scheme: light dark` + ライト/ダーク別 `theme-color` |
-| canonical | `canonical` + `hreflang="ja"` + `hreflang="x-default"` |
-| アイコン | `favicon.svg` / `apple-touch-icon` / `site.webmanifest` |
-| Open Graph | `og:*` フルセット (image の type/width/height/alt も指定済み) |
-| Twitter Card | `summary_large_image` + `site` / `creator` / `image:alt` |
-| 構造化データ | JSON-LD (WebSite + Organization) を **ビルド時にinline展開** |
+| 表示テーマ   | `color-scheme: light dark` + ライト/ダーク別 `theme-color`                           |
+| canonical    | `canonical` + `hreflang="ja"` + `hreflang="x-default"`                               |
+| アイコン     | `favicon.svg` / `apple-touch-icon` / `site.webmanifest`                              |
+| Open Graph   | `og:*` フルセット (image の type/width/height/alt も指定済み)                        |
+| Twitter Card | `summary_large_image` + `site` / `creator` / `image:alt`                             |
+| 構造化データ | JSON-LD (WebSite + Organization) を **ビルド時にinline展開**                         |
 
 ### TODO 箇所の置換
 
@@ -131,7 +148,9 @@ vite-vanilla-template/
 // src/seo/jsonld.js
 export const jsonld = {
   '@context': 'https://schema.org',
-  '@graph': [ /* WebSite, Organization, ... */ ],
+  '@graph': [
+    /* WebSite, Organization, ... */
+  ],
 };
 ```
 
@@ -140,7 +159,7 @@ export const jsonld = {
 <!-- jsonld -->
 ```
 
-ビルド時 (`npm run build`) と dev 時 (`npm run dev`) の両方で HTML に inline 展開されるため、JSを実行しないSNSクローラ (Twitter / Facebook / LINE / Slack 等) も認識できます。スキーマの種類 (Article / Product / BreadcrumbList 等) を増やしたい場合は `@graph` 配列に追加してください。
+ビルド時 (`vp build`) と dev 時 (`vp dev`) の両方で HTML に inline 展開されるため、JSを実行しないSNSクローラ (Twitter / Facebook / LINE / Slack 等) も認識できます。スキーマの種類 (Article / Product / BreadcrumbList 等) を増やしたい場合は `@graph` 配列に追加してください。
 
 ### 検証
 
@@ -206,15 +225,15 @@ export const jsonld = {
 
 ### 利用可能なクエリ
 
-| パラメータ | 例 | 効果 |
-|---|---|---|
-| `format` | `?format=avif` | フォーマット変換 |
-| `quality` | `?quality=70` | 品質 (1-100) |
-| `w` / `h` | `?w=800` | リサイズ |
-| `w` 複数 | `?w=400;800;1200` | 複数サイズ生成 |
-| `as` | `?as=srcset` | srcset 文字列で出力 |
-| `blur` | `?blur=20` | ぼかし |
-| `rotate` | `?rotate=90` | 回転 |
+| パラメータ | 例                | 効果                |
+| ---------- | ----------------- | ------------------- |
+| `format`   | `?format=avif`    | フォーマット変換    |
+| `quality`  | `?quality=70`     | 品質 (1-100)        |
+| `w` / `h`  | `?w=800`          | リサイズ            |
+| `w` 複数   | `?w=400;800;1200` | 複数サイズ生成      |
+| `as`       | `?as=srcset`      | srcset 文字列で出力 |
+| `blur`     | `?blur=20`        | ぼかし              |
+| `rotate`   | `?rotate=90`      | 回転                |
 
 > **public/ との使い分け**: `public/` 配下は加工せずにそのまま配信されます。OGP画像 (`<meta property="og:image">`) は SNS 互換性のため WebP 化せず `public/ogp.png` に PNG/JPG で配置するのが安全です。
 
@@ -231,26 +250,39 @@ vite-vanilla-template/
 
 `index.html` から `<a href="/about.html">` でリンクすればビルド対象に自動含まれます。孤立ページは `vite.config.js` の `build.rollupOptions.input` に明示してください。
 
-## ESLint / Prettier
+## Lint / Format（Oxlint + Oxfmt）
 
-- **ESLint v9 Flat Config** (`eslint.config.js`)
-- **Prettier**: セミコロンあり / シングルクォート / 100文字幅 / `prettier-plugin-tailwindcss` でクラス自動ソート
-- 競合は `eslint-config-prettier` で抑制
+Vite+ 標準の Rust 製ツール **Oxlint**（リンター）と **Oxfmt**（フォーマッタ）を採用。設定は `vite.config.js` の `lint` / `fmt` ブロックに一元管理されています。
 
-VS Code に下記の拡張を入れると保存時に自動整形されます:
+- **Oxlint** — `lint.plugins` で `oxc` / `unicorn` を有効化。ESLint 互換のルール名で `lint.rules` に列挙
+- **Oxfmt** — セミコロンあり / シングルクォート / 100文字幅 / `sortTailwindcss` で Tailwind クラス自動ソート
+- **pre-commit フック** — `.vite-hooks/pre-commit` から `vp staged` が走り、ステージ済みファイルに対して `vp check --fix` が自動実行
 
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+```bash
+vp check          # まとめて検査
+vp check --fix    # 可能な範囲で自動修正
+```
+
+VS Code に下記の拡張を入れると、保存時整形と補完が有効になります:
+
 - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+- [Oxc](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) — Oxlint の言語サーバー
 
 ## デプロイ
 
-`npm run build` で生成される `dist/` をそのまま静的ホスティングにアップロードします:
+`vp build`（または `pnpm build`）で生成される `dist/` をそのまま静的ホスティングにアップロードします:
 
-- **Vercel**: ルートディレクトリを指定して deploy（自動検出）
-- **Netlify**: build command `npm run build` / publish directory `dist`
+- **Vercel**: ルートディレクトリを指定して deploy（`packageManager` フィールドから pnpm を自動検出）
+- **Netlify**: build command `pnpm build` / publish directory `dist`
 - **GitHub Pages**: `dist/` をブランチ公開 or GitHub Actions
-- **Cloudflare Pages**: build command `npm run build` / output `dist`
+- **Cloudflare Pages**: build command `pnpm build` / output `dist`
+
+> `pnpm build` も内部で `vp build` を呼ぶため、CI では事前に Vite+ CLI のインストールが必要です。ジョブの最初に次を追加してください:
+>
+> ```bash
+> curl -fsSL https://vite.plus | bash
+> source "$HOME/.vite-plus/env"
+> ```
 
 ## ライセンス
 
