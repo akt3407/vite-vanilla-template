@@ -128,11 +128,11 @@
   }
 }
 
-@layer components {
-  .space-side-x {
+@layer utilities {
+  .space-x {
     padding-inline: var(--space-side);
   }
-  .grid-wrapper-pc {
+  .grid-pc {
     display: grid;
     column-gap: var(--space-gutter);
     grid-template-columns: repeat(12, minmax(0, 1fr));
