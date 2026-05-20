@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+.playwright-mcp/
+
+# scripts/optimize-images.mjs が生成する webp（dev/build 前に自動再生成）
+src/assets/*.webp
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

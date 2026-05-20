@@ -1,6 +1,6 @@
 # vite-vanilla-template
 
-[Vite+](https://viteplus.dev/) + バニラHTML/JS で本格的なWebサイトを作るためのスターターテンプレート。Tailwind CSS v4・HTMLセクション分割・画像WebP自動変換・Lint/Format環境を最初から組み込んでいます。
+[Vite+](https://viteplus.dev/) + バニラHTML/JS で本格的なWebサイトを作るためのスターターテンプレート。Tailwind CSS v4・HTMLセクション分割・画像のWebP自動変換・Lint/Format環境を最初から組み込んでいます。
 
 ## 特徴
 
@@ -8,7 +8,7 @@
 - **バニラHTML/JS** — フレームワーク非依存。`index.html` に直接書ける
 - **Tailwind CSS v4** — `@tailwindcss/vite` プラグイン方式（設定ファイル不要）
 - **HTMLセクション分割** — `vite-plugin-html-inject` でヘッダー/フッター等を別ファイル化
-- **画像のWebP自動変換** — `vite-imagetools` で `src/assets/` の画像を自動最適化
+- **画像のWebP自動変換** — `src/assets/` の jpg/png を `<img>` で参照するだけでビルド時に WebP 化（自作 `autoWebp` プラグイン）
 - **Oxlint + Oxfmt** — Rust 製の高速 Lint/Format（`vp check` で一括検証）。Tailwindクラス自動ソート対応
 - **Git pre-commit フック** — ステージ済みファイルを `vp staged` で自動整形
 - **VS Code 設定済み** — フォーマット・Emmet・Tailwind補完を即時利用可
@@ -49,7 +49,7 @@ vite-vanilla-template/
 │   ├── favicon.svg
 │   └── ...                    # apple-touch-icon, ogp.png 等
 ├── src/
-│   ├── assets/                # ビルドで処理される画像（自動WebP化）
+│   ├── assets/                # ビルドで処理される画像（jpg/png は自動WebP化）
 │   ├── sections/              # HTMLセクション断片
 │   │   ├── header.html
 │   │   ├── hero.html
@@ -190,50 +190,32 @@ export const jsonld = {
 
 ## 画像の自動WebP変換
 
-`vite-imagetools` を `src/assets/` 配下の画像に対して以下の挙動で設定済み:
-
-- デフォルト: **WebP変換、quality 80**
-- `?no-webp` 付与で元フォーマット保持
-- `?format=avif` などで他フォーマット指定
-
-### 基本
+`src/assets/` などに置いた **jpg / jpeg / png** を HTML の `<img src>` で参照すれば、
+**ビルド時に自動で WebP へ変換** され、参照も書き換わります（`vite.config.js` の `autoWebp` プラグイン）。
+import は不要で、HTML を書くだけです。
 
 ```html
-<img src="/src/assets/hero.jpg" alt="Hero" />
+<img src="/src/assets/hero.png" alt="Hero" width="343" height="361" />
 ```
 
-→ ビルド時に `dist/assets/hero-xxxxx.webp` として出力。
+→ ビルド後: `dist/assets/hero-xxxxxxxx.webp` を出力し、HTML の `src` も自動で
+`/assets/hero-xxxxxxxx.webp` に書き換わります（元の png/jpg は出力されません）。
 
-### `<picture>` でフォールバック付き
+- `width` / `height` を付けると CLS（レイアウトシフト）を防げる
+- 品質は `vite.config.js` の `autoWebp({ quality: 80 })` で調整
+- **dev では変換せず元画像を配信**（変換は本番ビルドのみ）。実際の WebP は `pnpm build` で確認
+- WebP は主要ブラウザで 97%+ サポートのため、多くの場合フォールバックは不要
+
+### 変換させたくない画像（元形式のまま配信）
+
+自動変換の対象は **`src/assets/` など “プロジェクトルート配下の実ファイル” を指す `<img src>`** だけです。
+**`public/` 配下に置いた画像は変換されず、そのまま配信** されます。元形式を保ちたい画像や、
+WebP 非対応環境向けの手書き `<picture>` フォールバックは `public/` を使ってください。
 
 ```html
-<picture>
-  <source srcset="/src/assets/hero.jpg" type="image/webp" />
-  <img src="/src/assets/hero.jpg?no-webp" alt="Hero" />
-</picture>
+<!-- public/legacy.png はそのまま配信される（変換されない） -->
+<img src="/legacy.png" alt="Legacy" width="343" height="361" />
 ```
-
-### レスポンシブ画像
-
-```html
-<img
-  src="/src/assets/hero.jpg?w=400;800;1200&as=srcset"
-  alt="Hero"
-  sizes="(max-width: 768px) 100vw, 1200px"
-/>
-```
-
-### 利用可能なクエリ
-
-| パラメータ | 例                | 効果                |
-| ---------- | ----------------- | ------------------- |
-| `format`   | `?format=avif`    | フォーマット変換    |
-| `quality`  | `?quality=70`     | 品質 (1-100)        |
-| `w` / `h`  | `?w=800`          | リサイズ            |
-| `w` 複数   | `?w=400;800;1200` | 複数サイズ生成      |
-| `as`       | `?as=srcset`      | srcset 文字列で出力 |
-| `blur`     | `?blur=20`        | ぼかし              |
-| `rotate`   | `?rotate=90`      | 回転                |
 
 > **public/ との使い分け**: `public/` 配下は加工せずにそのまま配信されます。OGP画像 (`<meta property="og:image">`) は SNS 互換性のため WebP 化せず `public/ogp.png` に PNG/JPG で配置するのが安全です。
 

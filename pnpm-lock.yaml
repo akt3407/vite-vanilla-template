@@ -19,12 +19,12 @@ importers:
         specifier: ^4.2.4
         version: 4.3.0
     devDependencies:
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
       vite:
         specifier: npm:@voidzero-dev/vite-plus-core@latest
         version: '@voidzero-dev/vite-plus-core@0.1.20(jiti@2.7.0)'
-      vite-imagetools:
-        specifier: ^10.0.0
-        version: 10.0.0(@voidzero-dev/vite-plus-core@0.1.20(jiti@2.7.0))
       vite-plugin-html-inject:
         specifier: ^1.1.2
         version: 1.1.2
@@ -490,15 +490,6 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@rollup/pluginutils@5.3.0':
-    resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
@@ -601,9 +592,6 @@ packages:
 
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
-
-  '@types/estree@1.0.9':
-    resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
 
   '@voidzero-dev/vite-plus-core@0.1.20':
     resolution: {integrity: sha512-4KmzRfzwTeG3JuvDijrdqWusSgRvLMKDPrVsDdtbDVVjEMq0VnM8lSH+Nvepd6Pg+SuSVUP212OIfH/3Yn1bfA==}
@@ -763,9 +751,6 @@ packages:
   es-module-lexer@1.7.0:
     resolution: {integrity: sha512-jEQoCwk8hyb2AZziIOLhDqpm5+2ww5uIE6lkO/6jcOCusfk6LhMHpXXfBLXTZ7Ydyt0j4VoUQv6uGNYbdW+kBA==}
 
-  estree-walker@2.0.2:
-    resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
-
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
     engines: {node: '>=12.0.0'}
@@ -782,10 +767,6 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
-
-  imagetools-core@9.1.0:
-    resolution: {integrity: sha512-xQjs+2vrxLnAjCq+omuNkd5UQTld9/bP8+YT0LyYTlKfuSQtgUBvqhUwGugzSAh6sCdN+LnROMuLswn5hZ9Fhg==}
-    engines: {node: '>=20.0.0'}
 
   jiti@2.7.0:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
@@ -966,12 +947,6 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
-
-  vite-imagetools@10.0.0:
-    resolution: {integrity: sha512-+83L32YPU/2BOHWhudO2+9T5HBvb3+0qHoUNN7fb0+XcAoXilx7aE25cDPWU5kBi5Yc750zYCvHxgfyR+tAuMA==}
-    engines: {node: '>=22.0.0'}
-    peerDependencies:
-      vite: '>=7.0.0'
 
   vite-plugin-html-inject@1.1.2:
     resolution: {integrity: sha512-4DWANEcAw73H5JLWTAI4EvXdSyoGqGq/Is9fTRjpF+SJLor58LNdqB+YYnK3FOLwx6LMTAn4z1hkiRyc52lYLg==}
@@ -1253,12 +1228,6 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@rollup/pluginutils@5.3.0':
-    dependencies:
-      '@types/estree': 1.0.9
-      estree-walker: 2.0.2
-      picomatch: 4.0.4
-
   '@standard-schema/spec@1.1.0': {}
 
   '@tailwindcss/node@4.3.0':
@@ -1335,8 +1304,6 @@ snapshots:
       assertion-error: 2.0.1
 
   '@types/deep-eql@4.0.2': {}
-
-  '@types/estree@1.0.9': {}
 
   '@voidzero-dev/vite-plus-core@0.1.20(jiti@2.7.0)':
     dependencies:
@@ -1420,8 +1387,6 @@ snapshots:
 
   es-module-lexer@1.7.0: {}
 
-  estree-walker@2.0.2: {}
-
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
       picomatch: 4.0.4
@@ -1430,8 +1395,6 @@ snapshots:
     optional: true
 
   graceful-fs@4.2.11: {}
-
-  imagetools-core@9.1.0: {}
 
   jiti@2.7.0: {}
 
@@ -1628,15 +1591,6 @@ snapshots:
 
   tslib@2.8.1:
     optional: true
-
-  vite-imagetools@10.0.0(@voidzero-dev/vite-plus-core@0.1.20(jiti@2.7.0)):
-    dependencies:
-      '@rollup/pluginutils': 5.3.0
-      imagetools-core: 9.1.0
-      sharp: 0.34.5
-      vite: '@voidzero-dev/vite-plus-core@0.1.20(jiti@2.7.0)'
-    transitivePeerDependencies:
-      - rollup
 
   vite-plugin-html-inject@1.1.2: {}
 

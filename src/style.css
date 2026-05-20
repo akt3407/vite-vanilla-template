@@ -10,8 +10,9 @@
   --font-en: ;
 
   /* font-size（基準幅: 1440px） */
-  --text- : ;
+  --text-*: initial;
 
+  --text-: ;
 
   /* 色 */
   --color-*: initial;
@@ -20,6 +21,61 @@
   --color-black: ;
 
   --color-accent: ;
+}
+
+/* ベース設定値 */
+:root {
+  --base-width: 390;
+  --base-side-margin: 30; /* プロジェクトごとに書き換え */
+  --base-gutter: 14; /* プロジェクトごとに書き換え */
+  --base-grid-number: 4; /* プロジェクトごとに書き換え */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --base-width: 1440;
+    --base-side-margin: 60; /* プロジェクトごとに書き換え */
+    --base-gutter: 24; /* プロジェクトごとに書き換え */
+    --base-grid-number: 12; /* プロジェクトごとに書き換え */
+  }
+}
+
+/* 計算値 */
+:root {
+  /* サイドマージン・ガター */
+  --space-side: calc(100vw * var(--base-side-margin) / var(--base-width));
+  --space-gutter: calc(100vw * var(--base-gutter) / var(--base-width));
+
+  /* グリッド計算用 */
+  --space-gutter-number: calc(var(--base-grid-number) - 1);
+  --base-grid-width-all: calc(
+    100vw - (var(--space-side) * 2) - (var(--space-gutter) * var(--space-gutter-number))
+  );
+  --base-grid-width: calc(var(--base-grid-width-all) / var(--base-grid-number));
+
+  /* グリッド左端の位置（各列の開始X座標） */
+  --grid-pos-1: var(--space-side);
+  --grid-pos-2: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 1);
+  --grid-pos-3: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 2);
+  --grid-pos-4: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 3);
+  --grid-pos-5: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 4);
+  --grid-pos-6: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 5);
+  --grid-pos-7: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 6);
+  --grid-pos-8: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 7);
+  --grid-pos-9: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 8);
+  --grid-pos-10: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 9);
+  --grid-pos-11: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 10);
+  --grid-pos-12: calc(var(--space-side) + (var(--base-grid-width) + var(--space-gutter)) * 11);
+
+  /* グリッド幅（N列分の幅） */
+  --grid-w-1: calc(var(--base-grid-width) * 1);
+  --grid-w-2: calc(var(--base-grid-width) * 2 + var(--space-gutter) * 1);
+  --grid-w-3: calc(var(--base-grid-width) * 3 + var(--space-gutter) * 2);
+  --grid-w-4: calc(var(--base-grid-width) * 4 + var(--space-gutter) * 3);
+  --grid-w-5: calc(var(--base-grid-width) * 5 + var(--space-gutter) * 4);
+  --grid-w-6: calc(var(--base-grid-width) * 6 + var(--space-gutter) * 5);
+  --grid-w-7: calc(var(--base-grid-width) * 7 + var(--space-gutter) * 6);
+  --grid-w-8: calc(var(--base-grid-width) * 8 + var(--space-gutter) * 7);
 }
 
 /* ベーススタイル */
@@ -34,23 +90,20 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
-    font-size: min(calc(10 / 375 * 100vw), 10px);
     -ms-overflow-style: none;
     scrollbar-width: none;
-  }
-  @media (min-width: 768px) {
-    html {
-      font-size: max(10px, calc(10 / 1440 * 100vw));
-    }
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
     font-family: var(--font-jp);
-    line-height: 1;
-    color: var(--color-black);
+    line-height: 1; /* プロジェクトごとに書き換え */
+    color: var(--color-black); /* プロジェクトごとに書き換え */
     font-feature-settings: 'palt';
     font-weight: 400;
-    background: var(--color-);
+    background: var(--color-); /* プロジェクトごとに書き換え */
   }
 
   img,
@@ -71,6 +124,17 @@
   h4 {
     overflow-wrap: break-word;
     /* word-break: auto-phrase; */
-    text-wrap: pretty;
+    /* text-wrap: pretty; */
+  }
+}
+
+@layer components {
+  .space-side-x {
+    padding-inline: var(--space-side);
+  }
+  .grid-wrapper-pc {
+    display: grid;
+    column-gap: var(--space-gutter);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 }
