@@ -72,14 +72,3 @@
     /* text-wrap: pretty; */
   }
 }
-
-@layer utilities {
-  .space-x {
-    padding-inline: var(--space-side);
-  }
-  .grid-pc {
-    display: grid;
-    column-gap: var(--space-gutter);
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-  }
-}
