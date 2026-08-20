@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite-plus';
+import { defineConfig } from 'vite';
 import path from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import tailwindcss from '@tailwindcss/vite';
 import injectHTML from 'vite-plugin-html-inject';
@@ -18,13 +18,17 @@ function injectJsonLd() {
   };
 }
 
-// HTML の <img src="*.jpg|*.jpeg|*.png"> をビルド時に WebP へ自動変換し、参照を書き換える。
+// HTML の <img src="*.jpg|*.jpeg|*.png"> をビルド時に <picture> へ置き換える。
+// 生成した WebP を <source> に、元画像は <img> に残すのでフォールバックが効く。
 // html-inject（order:'pre'）でセクションが差し込まれた後、Vite が元画像を emit する前の
-// pre 段階で処理する。dev では変換せず元画像をそのまま配信する（本番ビルドのみ変換）。
-// 外部URL・data: URI は対象外。<picture> のフォールバックを残したい場合は <img> ではなく
-// <source> に書けば変換されない。
+// pre 段階で処理する。dev では変換せず元の <img> のまま配信する（本番ビルドのみ変換）。
+// 外部URL・data: URI は対象外。手書きの <picture>...</picture> の中身は触らない。
+// 注意: ビルド後は <img> が <picture> に包まれるため `親 > img` の子セレクタは届かなくなる。
 function autoWebp({ quality = 80 } = {}) {
-  const imgSrc = /<img\b[^>]*?\bsrc=["']([^"']+\.(?:jpe?g|png))["']/gi;
+  // <picture> ブロックを先に食わせることで、その中の <img> にはマッチさせない
+  const target = /<picture\b[\s\S]*?<\/picture>|<img\b[^>]*>/gi;
+  const srcAttr = /\bsrc=["']([^"']+\.(?:jpe?g|png))["']/i;
+  const emitted = new Set();
   let root = import.meta.dirname;
   let base = '/';
   let assetsDir = 'assets';
@@ -37,124 +41,50 @@ function autoWebp({ quality = 80 } = {}) {
       assetsDir = config.build.assetsDir;
       isBuild = config.command === 'build';
     },
+    buildStart() {
+      emitted.clear();
+    },
     transformIndexHtml: {
       order: 'pre',
       async handler(html) {
-        if (!isBuild) return html; // dev は元画像をそのまま配信
-        const sources = new Set([...html.matchAll(imgSrc)].map((match) => match[1]));
-        for (const src of sources) {
+        if (!isBuild) return html; // dev は元の <img> のまま配信
+        // 同じ画像を複数ページで使っても emit は1回だけ（fileName 衝突を避ける）
+        const emit = (source, name, ext) => {
+          const hash = createHash('sha256').update(source).digest('hex').slice(0, 8);
+          const fileName = `${assetsDir}/${name}-${hash}${ext}`;
+          if (!emitted.has(fileName)) {
+            this.emitFile({ type: 'asset', fileName, source });
+            emitted.add(fileName);
+          }
+          return `${base}${fileName}`;
+        };
+        const converted = new Map(); // 元の src -> { webp, orig } の最終URL
+        for (const [tag] of html.matchAll(target)) {
+          if (!/^<img/i.test(tag)) continue; // 手書きの <picture> はそのまま
+          const src = tag.match(srcAttr)?.[1];
+          if (!src || converted.has(src)) continue;
           if (/^(?:https?:)?\/\//.test(src) || src.startsWith('data:')) continue;
           const filePath = path.join(root, src.replace(/^\//, ''));
           if (!existsSync(filePath)) continue;
-          const webp = await sharp(filePath).webp({ quality }).toBuffer();
-          const hash = createHash('sha256').update(webp).digest('hex').slice(0, 8);
-          const name = path.basename(src).replace(/\.(?:jpe?g|png)$/i, '');
-          const fileName = `${assetsDir}/${name}-${hash}.webp`;
-          this.emitFile({ type: 'asset', fileName, source: webp });
-          html = html.split(src).join(`${base}${fileName}`);
+          const ext = path.extname(src);
+          const name = path.basename(src, ext);
+          converted.set(src, {
+            webp: emit(await sharp(filePath).webp({ quality }).toBuffer(), name, '.webp'),
+            orig: emit(readFileSync(filePath), name, ext),
+          });
         }
-        return html;
+        return html.replace(target, (tag) => {
+          const src = /^<img/i.test(tag) ? tag.match(srcAttr)?.[1] : null;
+          const url = src && converted.get(src);
+          if (!url) return tag;
+          return `<picture><source srcset="${url.webp}" type="image/webp">${tag.replace(src, url.orig)}</picture>`;
+        });
       },
     },
   };
 }
 
 export default defineConfig({
-  staged: {
-    '*': 'vp check --fix',
-  },
-  lint: {
-    plugins: ['oxc', 'unicorn'],
-    categories: {
-      correctness: 'warn',
-    },
-    env: {
-      builtin: true,
-      es2026: true,
-      browser: true,
-    },
-    ignorePatterns: ['dist/**', 'node_modules/**'],
-    rules: {
-      'constructor-super': 'error',
-      'for-direction': 'error',
-      'getter-return': 'error',
-      'no-async-promise-executor': 'error',
-      'no-case-declarations': 'error',
-      'no-class-assign': 'error',
-      'no-compare-neg-zero': 'error',
-      'no-cond-assign': 'error',
-      'no-const-assign': 'error',
-      'no-constant-binary-expression': 'error',
-      'no-constant-condition': 'error',
-      'no-control-regex': 'error',
-      'no-debugger': 'error',
-      'no-delete-var': 'error',
-      'no-dupe-class-members': 'error',
-      'no-dupe-else-if': 'error',
-      'no-dupe-keys': 'error',
-      'no-duplicate-case': 'error',
-      'no-empty': 'error',
-      'no-empty-character-class': 'error',
-      'no-empty-pattern': 'error',
-      'no-empty-static-block': 'error',
-      'no-ex-assign': 'error',
-      'no-extra-boolean-cast': 'error',
-      'no-fallthrough': 'error',
-      'no-func-assign': 'error',
-      'no-global-assign': 'error',
-      'no-import-assign': 'error',
-      'no-invalid-regexp': 'error',
-      'no-irregular-whitespace': 'error',
-      'no-loss-of-precision': 'error',
-      'no-misleading-character-class': 'error',
-      'no-new-native-nonconstructor': 'error',
-      'no-nonoctal-decimal-escape': 'error',
-      'no-obj-calls': 'error',
-      'no-prototype-builtins': 'error',
-      'no-redeclare': 'error',
-      'no-regex-spaces': 'error',
-      'no-self-assign': 'error',
-      'no-setter-return': 'error',
-      'no-shadow-restricted-names': 'error',
-      'no-sparse-arrays': 'error',
-      'no-this-before-super': 'error',
-      'no-unassigned-vars': 'error',
-      'no-undef': 'error',
-      'no-unexpected-multiline': 'error',
-      'no-unreachable': 'error',
-      'no-unsafe-finally': 'error',
-      'no-unsafe-negation': 'error',
-      'no-unsafe-optional-chaining': 'error',
-      'no-unused-labels': 'error',
-      'no-unused-private-class-members': 'error',
-      'no-unused-vars': 'error',
-      'no-useless-assignment': 'error',
-      'no-useless-backreference': 'error',
-      'no-useless-catch': 'error',
-      'no-useless-escape': 'error',
-      'no-with': 'error',
-      'preserve-caught-error': 'error',
-      'require-yield': 'error',
-      'use-isnan': 'error',
-      'valid-typeof': 'error',
-    },
-  },
-  fmt: {
-    semi: true,
-    singleQuote: true,
-    trailingComma: 'all',
-    printWidth: 100,
-    tabWidth: 2,
-    useTabs: false,
-    arrowParens: 'always',
-    bracketSpacing: true,
-    bracketSameLine: false,
-    endOfLine: 'lf',
-    htmlWhitespaceSensitivity: 'css',
-    sortTailwindcss: {},
-    sortPackageJson: false,
-    ignorePatterns: ['dist', 'node_modules', 'public'],
-  },
   plugins: [
     tailwindcss(),
     injectHTML(),

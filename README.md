@@ -1,36 +1,28 @@
 # vite-vanilla-template
 
-[Vite+](https://viteplus.dev/) + バニラHTML/JS のスターターテンプレート。Tailwind CSS v4・HTMLセクション分割・レスポンシブグリッド・画像のWebP自動変換・Lint/Format を最初から同梱。
+[Vite](https://vite.dev/) + バニラHTML/JS のスターターテンプレート。Tailwind CSS v4・HTMLセクション分割・レスポンシブグリッド・画像のWebP自動変換・Lint/Format を最初から同梱。
 
 ## 特徴
 
-- **Vite+** — Vite/Oxlint/Oxfmt 統合 CLI (`vp`)。高速HMRと最適化ビルド
+- **Vite** — 高速HMRと最適化ビルド
 - **バニラHTML/JS** — フレームワーク非依存
 - **Tailwind CSS v4** — 設定ファイル不要のプラグイン方式
 - **HTMLセクション分割** — `vite-plugin-html-inject` の `<load>` で断片化
 - **レスポンシブグリッド** — CSS変数で SP4列 / PC12列のカラム位置・幅を算出
-- **画像のWebP自動変換** — `src/assets/` の jpg/png を `<img>` で参照するだけでビルド時にWebP化
-- **Oxlint + Oxfmt** — Rust製の高速 Lint/Format（`vp check`）。Tailwindクラス自動ソート
-- **Git pre-commit** — ステージ済みを `vp staged` で自動整形
+- **画像のWebP自動変換** — `src/assets/` の jpg/png を `<img>` で参照するだけで、ビルド時に WebP + `<picture>` 化
+- **ESLint + Prettier** — Lint/Format。Tailwindクラス自動ソート付き
 - **VS Code 設定済み** — 保存時整形・Emmet・Tailwind補完
 
 ## クイックスタート
 
-Vite+ CLI 未導入なら最初に1回:
-
-```bash
-curl -fsSL https://vite.plus | bash      # macOS / Linux
-irm https://vite.plus/ps1 | iex           # Windows (PowerShell)
-```
-
 ```bash
 git clone <this-repo>
 cd vite-vanilla-template
-vp install
-vp dev          # → http://localhost:5173
+pnpm install
+pnpm dev        # → http://localhost:5173
 ```
 
-> パッケージマネージャは **pnpm**。`pnpm install` / `pnpm dev` でも可（`scripts` は `vp` のラッパー）。
+> パッケージマネージャは **pnpm**。
 
 ## プロジェクト構成
 
@@ -43,21 +35,22 @@ vp dev          # → http://localhost:5173
 │   ├── main.js        # JSエントリ
 │   └── style.css      # Tailwind + デザイントークン + グリッド変数
 ├── index.html         # エントリ
-└── vite.config.js     # Vite / Oxlint / Oxfmt / autoWebp を一括管理
+├── vite.config.js     # Vite / autoWebp
+├── eslint.config.js   # ESLint（flat config）
+└── .prettierrc.json   # Prettier
 ```
 
 ## スクリプト
 
-| コマンド          | 同等の pnpm 経由 | 説明                                     |
-| ----------------- | ---------------- | ---------------------------------------- |
-| `vp dev`          | `pnpm dev`       | 開発サーバー起動 (http://localhost:5173) |
-| `vp build`        | `pnpm build`     | 本番ビルド (`dist/` に出力)              |
-| `vp preview`      | `pnpm preview`   | ビルド結果のローカルプレビュー           |
-| `vp lint .`       | `pnpm lint`      | Oxlint チェック                          |
-| `vp lint . --fix` | `pnpm lint:fix`  | Oxlint 自動修正                          |
-| `vp fmt .`        | `pnpm format`    | Oxfmt で全ファイル整形                   |
-| `vp check`        | —                | lint + format + 型チェックを一括実行     |
-| `vp check --fix`  | —                | 上記を可能な範囲で自動修正               |
+| コマンド            | 説明                                     |
+| ------------------- | ---------------------------------------- |
+| `pnpm dev`          | 開発サーバー起動 (http://localhost:5173) |
+| `pnpm build`        | 本番ビルド (`dist/` に出力)              |
+| `pnpm preview`      | ビルド結果のローカルプレビュー           |
+| `pnpm lint`         | ESLint チェック                          |
+| `pnpm lint:fix`     | ESLint 自動修正                          |
+| `pnpm format`       | Prettier で全ファイル整形                |
+| `pnpm format:check` | 整形漏れのチェックのみ（CI 向け）        |
 
 ## HTMLセクション分割
 
@@ -135,19 +128,30 @@ vp dev          # → http://localhost:5173
 }
 ```
 
-## 画像の自動WebP変換
+## 画像の自動WebP変換（`<picture>` 化）
 
-`src/assets/` の **jpg / png** を `<img src>` で参照するだけで、**ビルド時に WebP へ自動変換**＋src書き換え（`vite.config.js` の `autoWebp` プラグイン。import 不要）。
+`src/assets/` の **jpg / png** を `<img src>` で参照するだけで、**ビルド時に WebP を生成して `<picture>` へ置き換え**る（`vite.config.js` の `autoWebp` プラグイン。import 不要）。
 
 ```html
 <img src="/src/assets/hero.png" alt="Hero" width="343" height="361" />
 ```
 
-→ `dist/assets/hero-xxxx.webp` を出力、`src` も自動で書き換わり、元の png/jpg は出力されない。
+→ ビルド後:
+
+```html
+<picture>
+  <source srcset="/assets/hero-xxxx.webp" type="image/webp" />
+  <img src="/assets/hero-yyyy.png" alt="Hero" width="343" height="361" />
+</picture>
+```
+
+WebP 非対応環境では元画像にフォールバックする（元の png/jpg も `dist/assets/` に出力される）。`<img>` の属性はそのまま引き継がれる。
 
 - `width` / `height` で CLS（レイアウトシフト）を回避。品質は `autoWebp({ quality: 80 })` で調整
-- **dev は変換せず元画像を配信**（変換は本番ビルドのみ。`pnpm build` で確認）
-- WebP は97%+対応で通常フォールバック不要。**変換させたくない / 元形式を保ちたい画像は `public/` に置く**（public 配下は変換されない）
+- **dev は変換せず元の `<img>` のまま配信**（変換は本番ビルドのみ。`pnpm build` で確認）
+- **手書きの `<picture>...</picture>` の中身は変換されない**。アートディレクション等を自前で書きたい場合はそのまま書く
+- **変換させたくない画像は `public/` に置く**（public 配下は変換されない）
+- ⚠️ ビルド後は `<img>` が `<picture>` に包まれるため、`.parent > img` のような子セレクタは効かなくなる（`.parent img` を使う）
 
 ## SEO構成
 
@@ -167,25 +171,18 @@ JSON-LD は `src/seo/jsonld.js` でJSオブジェクト管理し、`vite.config.
 
 ## Lint / Format
 
-Rust製の **Oxlint** + **Oxfmt**。設定は `vite.config.js` の `lint` / `fmt` ブロックに集約。pre-commit（`.vite-hooks/pre-commit`）でステージ済みファイルに `vp check --fix` が走る。
+**ESLint**（`eslint.config.js` / `@eslint/js` の recommended）+ **Prettier**（`.prettierrc.json`）。Prettier は `prettier-plugin-tailwindcss` で Tailwind クラスも並べ替える。
 
 ```bash
-vp check          # まとめて検査
-vp check --fix    # 自動修正
+pnpm lint --fix   # Lint 自動修正
+pnpm format       # 整形
 ```
 
-> VS Code 拡張: [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) / [Oxc](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode)。
+> VS Code 拡張: [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) / [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) / [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)。
 
 ## デプロイ
 
-`vp build`（`pnpm build`）で出力した `dist/` を静的ホスティングへ。Vercel / Netlify / Cloudflare Pages なら build command `pnpm build`・publish `dist`。
-
-> `pnpm build` は内部で `vp build` を呼ぶため、CI では先に Vite+ CLI を入れる:
->
-> ```bash
-> curl -fsSL https://vite.plus | bash
-> source "$HOME/.vite-plus/env"
-> ```
+`pnpm build` で出力した `dist/` を静的ホスティングへ。Vercel / Netlify / Cloudflare Pages なら build command `pnpm build`・publish `dist`。
 
 ## ライセンス
 

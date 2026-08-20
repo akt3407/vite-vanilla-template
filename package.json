@@ -4,19 +4,24 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vp dev",
-    "build": "vp build",
-    "preview": "vp preview",
-    "lint": "vp lint .",
-    "lint:fix": "vp lint . --fix",
-    "format": "vp fmt .",
-    "prepare": "vp config"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.11.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "sharp": "^0.34.5",
-    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-    "vite-plugin-html-inject": "^1.1.2",
-    "vite-plus": "latest"
+    "vite": "^8.2.1",
+    "vite-plugin-html-inject": "^1.1.2"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
@@ -24,10 +29,6 @@
   },
   "packageManager": "pnpm@10.29.3",
   "pnpm": {
-    "overrides": {
-      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
-    },
     "onlyBuiltDependencies": [
       "sharp"
     ]

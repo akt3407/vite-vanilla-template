@@ -10,18 +10,10 @@
       name="description"
       content="サイトの説明文を120文字以内で簡潔に書きます。検索結果に表示される重要な要素です。"
     />
-    <!-- TODO: author を実名 / 会社名に -->
-    <meta name="author" content="作者名" />
-    <meta name="generator" content="Vite" />
     <!-- TODO: ホーム画面追加時の表示名 -->
     <meta name="application-name" content="サイト名" />
 
-    <meta
-      name="robots"
-      content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
-    />
-    <meta name="googlebot" content="index, follow" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="format-detection" content="telephone=no" />
 
     <!-- theme -->
@@ -30,10 +22,9 @@
     <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" /> -->
 
     <link rel="canonical" href="https://example.com/" />
-    <link rel="alternate" hreflang="ja" href="https://example.com/" />
-    <link rel="alternate" hreflang="x-default" href="https://example.com/" />
 
     <!-- favicon size 16x16, 32x32 -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- apple-touch-icon size 180x180 -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -56,12 +47,6 @@
     <meta property="og:image:alt" content="サイトタイトルのOGP画像" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@your_handle" />
-    <meta name="twitter:creator" content="@your_handle" />
-    <meta name="twitter:title" content="ページタイトル" />
-    <meta name="twitter:description" content="Twitterカード用の説明文。" />
-    <meta name="twitter:image" content="https://example.com/ogp.png" />
-    <meta name="twitter:image:alt" content="サイトタイトルのOGP画像" />
 
     <!-- jsonld -->
 
@@ -83,5 +68,14 @@
       <!-- ここにセクション貼る -->
     </main>
     <!-- footer -->
+    <img src="/src/assets/test.jpg" alt="テスト" class="w-full" loading="lazy" />
+    <img src="/src/assets/logo.png" alt="ロゴ" width="60" height="60" />
+    <img src="/src/assets/test.jpg" alt="同じ画像を再利用" />
+    <img src="https://example.com/remote.jpg" alt="外部" />
+    <img src="/src/assets/missing.jpg" alt="存在しない" />
+    <picture
+      ><source srcset="/src/assets/logo.png" type="image/png" />
+      <img src="/src/assets/test.jpg" alt="手書きpicture"
+    /></picture>
   </body>
 </html>

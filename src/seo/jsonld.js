@@ -1,33 +1,42 @@
 // TODO: 本番URL / 各種テキストを置換
 const SITE_URL = 'https://example.com/';
-const SITE_NAME = 'サイト名';
 const SITE_DESCRIPTION = 'サイトの説明文';
-const ORG_NAME = '組織名';
-const LOGO_URL = 'https://example.com/logo.png';
+const ORG_NAME = '店名';
 
+// 店舗がある場合
+// 住所、電話番号、チェックインタイム、部屋数、amenityFeature都度書き換える(店舗ある場合)
 export const jsonld = {
   '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'WebSite',
-      '@id': `${SITE_URL}#website`,
-      url: SITE_URL,
-      name: SITE_NAME,
-      description: SITE_DESCRIPTION,
-      inLanguage: 'ja',
-      publisher: { '@id': `${SITE_URL}#organization` },
-    },
-    {
-      '@type': 'Organization',
-      '@id': `${SITE_URL}#organization`,
-      name: ORG_NAME,
-      url: SITE_URL,
-      logo: {
-        '@type': 'ImageObject',
-        url: LOGO_URL,
-        width: 512,
-        height: 512,
-      },
-    },
+  '@type': 'Hotel', // TODO: 業種に応じて変更（LocalBusiness / CafeOrCoffeeShop / BeautySalon など）
+  name: ORG_NAME,
+  description: SITE_DESCRIPTION,
+  url: SITE_URL,
+  telephone: '+81-3-1234-5678',
+  address: {
+    '@type': 'PostalAddress',
+    postalCode: '150-0002',
+    addressRegion: '東京都',
+    addressLocality: '渋谷区',
+    streetAddress: '渋谷1-2-3 サンプルビル4F',
+    addressCountry: 'JP',
+  },
+  checkinTime: '15:00',
+  checkoutTime: '10:00',
+  numberOfRooms: 24,
+  petsAllowed: false,
+  amenityFeature: [
+    { '@type': 'LocationFeatureSpecification', name: '無料Wi-Fi', value: true },
+    { '@type': 'LocationFeatureSpecification', name: '大浴場', value: true },
+    { '@type': 'LocationFeatureSpecification', name: '駐車場', value: true },
   ],
 };
+
+// 実店舗がない場合
+// export const jsonld = {
+//   '@context': 'https://schema.org',
+//   '@type': 'Organization',
+//   name: ORG_NAME,
+//   description: SITE_DESCRIPTION,
+//   url: SITE_URL,
+//   logo: 'https://example.com/logo.png',
+// };
