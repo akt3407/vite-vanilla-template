@@ -8,7 +8,6 @@
 - **バニラHTML/JS** — フレームワーク非依存
 - **Tailwind CSS v4** — 設定ファイル不要のプラグイン方式
 - **HTMLセクション分割** — `vite-plugin-html-inject` の `<load>` で断片化
-- **レスポンシブグリッド** — CSS変数で SP4列 / PC12列のカラム位置・幅を算出
 - **画像のWebP自動変換** — `src/assets/` の jpg/png を `<img>` で参照するだけで、ビルド時に WebP + `<picture>` 化
 - **ESLint + Prettier** — Lint/Format。Tailwindクラス自動ソート付き
 - **VS Code 設定済み** — 保存時整形・Emmet・Tailwind補完
@@ -81,41 +80,6 @@ pnpm dev        # → http://localhost:5173
 ```
 
 > 断片HTMLは doctype が無くエディタが警告を出すことがある（`.vscode/settings.json` で抑制済み。出力には影響なし）。
-
-## グリッドシステム
-
-`src/style.css` にカラム計算用の CSS変数を定義済み。**SP（〜767px）は4カラム / PC（768px〜）は12カラム** に自動で切り替わる（`100vw` 基準で算出）。
-
-| 変数                              | 意味                                         |
-| --------------------------------- | -------------------------------------------- |
-| `--space-side`                    | 左右のサイドマージン                         |
-| `--space-gutter`                  | カラム間のガター                             |
-| `--base-grid-width`               | 1カラムの幅                                  |
-| `--grid-w-1` 〜 `--grid-w-8`      | Nカラム分の幅（間のガター込み）              |
-| `--grid-pos-1` 〜 `--grid-pos-12` | 各カラム左端のX座標（左端 = `--grid-pos-1`） |
-
-使用例:
-
-```css
-.section {
-  margin-inline: var(--space-side); /* 左右マージン */
-}
-.card {
-  width: var(--grid-w-6); /* 6カラム分の幅 */
-  margin-left: var(--grid-pos-3); /* 3カラム目の位置から */
-}
-.row {
-  display: flex;
-  gap: var(--space-gutter); /* ガター */
-}
-```
-
-よく使う組み合わせは `@layer utilities` にクラスとして用意済み:
-
-- `.space-x` — 左右に `--space-side` 分の `padding-inline`
-- `.grid-pc` — `display: grid` + 12カラム + `--space-gutter` のガター
-
-> カラム数・基準幅・マージン・ガターは `style.css` 冒頭の `--base-width` / `--base-grid-number` / `--base-side-margin` / `--base-gutter` を SP / PC それぞれで書き換えて調整する。
 
 ## Tailwind CSS
 
